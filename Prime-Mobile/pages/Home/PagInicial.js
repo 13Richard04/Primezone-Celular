@@ -2,12 +2,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 const Home = () => {
   return (
     <View style={styles.container}>
       <Header />
       <Text style={styles.text}>Conteúdo da Home Page</Text>
+      <Footer />
     </View>
   );
 };
