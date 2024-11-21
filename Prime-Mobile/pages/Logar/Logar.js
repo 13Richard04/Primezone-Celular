@@ -10,64 +10,68 @@ export default function LoginPage() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>PRIMEZONE</Text>
-      <Text style={styles.title}>LOGIN</Text>
+      <View style={styles.box}>
+        <Text style={styles.logo}>PRIMEZONE</Text>
+        <Text style={styles.title}>LOGIN</Text>
 
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="@gmail.com"
-          placeholderTextColor="#ccc"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Senha</Text>
-        <View style={styles.passwordContainer}>
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
-            placeholder="Insira sua senha"
+            placeholder="@gmail.com"
             placeholderTextColor="#ccc"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry={!showPassword}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
           />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <FontAwesome name={showPassword ? 'eye' : 'eye-slash'} size={24} color="#333" />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Senha</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Insira sua senha"
+              placeholderTextColor="#ccc"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <FontAwesome name={showPassword ? 'eye' : 'eye-slash'} size={20} color="#333" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.options}>
+          <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.checkboxContainer}>
+            <FontAwesome
+              name={rememberMe ? "check-square" : "square-o"}
+              size={24}
+              color="#333"
+            />
+            <Text style={styles.checkboxLabel}>Lembrar de mim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>
           </TouchableOpacity>
         </View>
-      </View>
 
-      <View style={styles.options}>
-        <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.checkboxContainer}>
-          <FontAwesome
-            name={rememberMe ? "check-square" : "square-o"}
-            size={24}
-            color="#333"
-          />
-          <Text style={styles.checkboxLabel}>Lembrar de mim</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Enviar</Text>
         </TouchableOpacity>
+
         <TouchableOpacity>
-          <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>
+          <Text style={styles.registerText}>
+            Não tem uma conta? <Text style={styles.registerLink}>Cadastre-se</Text>
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.googleButton}>
+          <FontAwesome name="google" size={20} color="#333" />
+          <Text style={styles.googleButtonText}>Entrar com Google</Text>
         </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Enviar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity>
-        <Text style={styles.registerText}>Não tem uma conta? <Text style={styles.registerLink}>Cadastre-se</Text></Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.googleButton}>
-        <FontAwesome name="google" size={20} color="#333" />
-        <Text style={styles.googleButtonText}>Entrar com Google</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -80,17 +84,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#003b5a',
     padding: 20,
   },
+  box: {
+    width: '90%',
+    backgroundColor: '#ffeb3b',
+    borderRadius: 10,
+    padding: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+  },
   logo: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ffeb3b',
+    color: '#003b5a',
     marginBottom: 10,
+    textAlign: 'center',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 20,
+    textAlign: 'center',
   },
   inputGroup: {
     width: '100%',
@@ -115,8 +132,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    paddingHorizontal: 10,
     backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    marginTop: 5,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 10,
+    fontSize: 16,
+    color: '#333',
   },
   options: {
     flexDirection: 'row',
@@ -161,7 +185,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffeb3b',
+    backgroundColor: '#ffffff',
     padding: 10,
     borderRadius: 5,
     marginTop: 15,
