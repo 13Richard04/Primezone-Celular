@@ -2,17 +2,29 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-export default function LoginPage({ navigation }) {
+export default function SignUpPage({ navigation }) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <View style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.logo}>PRIMEZONE</Text>
-        <Text style={styles.title}>LOGIN</Text>
+        <Text style={styles.title}>CADASTRO</Text>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Nome</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Seu nome completo"
+            placeholderTextColor="#ccc"
+            value={name}
+            onChangeText={setName}
+          />
+        </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Email</Text>
@@ -31,7 +43,7 @@ export default function LoginPage({ navigation }) {
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.passwordInput}
-              placeholder="Insira sua senha"
+              placeholder="Crie uma senha"
               placeholderTextColor="#ccc"
               value={password}
               onChangeText={setPassword}
@@ -43,34 +55,38 @@ export default function LoginPage({ navigation }) {
           </View>
         </View>
 
-        <View style={styles.options}>
-          <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.checkboxContainer}>
-            <FontAwesome
-              name={rememberMe ? "check-square" : "square-o"}
-              size={24}
-              color="#333"
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Confirmar Senha</Text>
+          <View style={styles.passwordContainer}>
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Repita sua senha"
+              placeholderTextColor="#ccc"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showPassword}
             />
-            <Text style={styles.checkboxLabel}>Lembrar de mim</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <FontAwesome name={showPassword ? 'eye' : 'eye-slash'} size={20} color="#333" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Enviar</Text>
+          <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-  <Text style={styles.registerText}>
-    Não tem uma conta? <Text style={styles.registerLink}>Cadastre-se</Text>
-  </Text>
-</TouchableOpacity>
+        {/* Botão de redirecionamento para a página de Login */}
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.loginText}>
+            Já tem uma conta? <Text style={styles.loginLink}>Faça login</Text>
+          </Text>
+        </TouchableOpacity>
 
-
+        {/* Botão de login com Google */}
         <TouchableOpacity style={styles.googleButton}>
           <FontAwesome name="google" size={20} color="#333" />
-          <Text style={styles.googleButtonText}>Entrar com Google</Text>
+          <Text style={styles.googleButtonText}>Cadastrar com Google</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -143,25 +159,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  options: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginBottom: 20,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkboxLabel: {
-    fontSize: 14,
-    color: '#333',
-    marginLeft: 5,
-  },
-  forgotPassword: {
-    fontSize: 14,
-    color: '#333',
-  },
   button: {
     width: '100%',
     backgroundColor: '#003b5a',
@@ -175,13 +172,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  registerText: {
+  loginText: {
     color: '#333',
     fontSize: 14,
     textAlign: 'center',
-    marginBottom: 20,
   },
-  registerLink: {
+  loginLink: {
     color: '#f4b400',
   },
   googleButton: {
