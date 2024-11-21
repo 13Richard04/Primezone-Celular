@@ -1,4 +1,3 @@
-// src/Pages/Home/Home.js
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import Header from '../../components/Header/Header';
@@ -11,21 +10,21 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <Header />
-      {/* Adicionamos um espaçamento para compensar o Header absoluto */}
-      <View style={styles.headerSpacer} />
-      {/* Carrossel de matérias */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false} 
-        contentContainerStyle={styles.carouselContainer}
-      >
-        {materias.map((materia, index) => (
-          <View key={index} style={styles.carouselItem}>
-            <Text style={styles.carouselText}>{materia}</Text>
-          </View>
-        ))}
-      </ScrollView>
-      <Text style={styles.text}>Conteúdo da Home Page</Text>
+      {/* Conteúdo principal */}
+      <View style={styles.mainContent}>
+        {/* Carrossel de matérias */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.carouselContainer}
+        >
+          {materias.map((materia, index) => (
+            <View key={index} style={styles.carouselItem}>
+              <Text style={styles.carouselText}>{materia}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
       <Footer />
     </View>
   );
@@ -34,11 +33,12 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    wi
-    backgroundColor: 'yellow',
+    justifyContent: 'space-between', // Mantém Header no topo e Footer no final
   },
-  headerSpacer: {
-    height: 100, // Altura para compensar o Header (ajuste conforme o necessário)
+  mainContent: {
+    flex: 1, // Preenche o espaço restante
+    padding: 20,
+    backgroundColor: '#E0F7FA', // Cor de fundo do Main
   },
   carouselContainer: {
     paddingVertical: 10,
@@ -59,12 +59,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     fontWeight: 'bold',
-  },
-  text: {
-    fontSize: 16,
-    color: '#333',
-    textAlign: 'center',
-    marginVertical: 20,
   },
 });
 

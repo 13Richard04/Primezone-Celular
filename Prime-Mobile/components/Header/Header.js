@@ -1,4 +1,3 @@
-// src/components/Header.js
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 
@@ -7,8 +6,8 @@ const Header = () => {
     <View style={styles.header}>
       <Text style={styles.headerText}>PERGUNTAS E MATÉRIAS</Text>
       <TextInput
-      style={styles.input}
-      placeholder='Qual sua matéria favorita?'
+        style={styles.input}
+        placeholder='Qual sua matéria favorita?'
       />
     </View>
   );
@@ -16,15 +15,13 @@ const Header = () => {
 
 const styles = StyleSheet.create({
   header: {
-    position: 'absolute',
-    top: 0,
-    width: Dimensions.get('window').width, // Define a largura para 100%
+    width: Dimensions.get('window').width, // Largura de 100%
     padding: 20,
     backgroundColor: '#054C69',
     alignItems: 'flex-start',
     paddingLeft: 15,
-    zIndex: 1,
     gap: 12,
+    height: 120, // Altura ajustada para o Header
   },
 
   headerText: {
