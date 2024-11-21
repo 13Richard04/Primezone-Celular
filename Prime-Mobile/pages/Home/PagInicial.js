@@ -1,3 +1,4 @@
+// src/Pages/Home/Home.js
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import Header from '../../components/Header/Header';
@@ -10,21 +11,19 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <Header />
-      {/* Conteúdo principal */}
-      <View style={styles.mainContent}>
-        {/* Carrossel de matérias */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={styles.carouselContainer}
-        >
-          {materias.map((materia, index) => (
-            <View key={index} style={styles.carouselItem}>
-              <Text style={styles.carouselText}>{materia}</Text>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+      {/* Adicionamos um espaçamento para compensar o Header absoluto */}
+      {/* Carrossel de matérias */}
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false} 
+        contentContainerStyle={styles.carouselContainer}
+      >
+        {materias.map((materia, index) => (
+          <View key={index} style={styles.carouselItem}>
+            <Text style={styles.carouselText}>{materia}</Text>
+          </View>
+        ))}
+      </ScrollView>
       <Footer />
     </View>
   );
@@ -33,32 +32,30 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between', // Mantém Header no topo e Footer no final
-  },
-  mainContent: {
-    flex: 1, // Preenche o espaço restante
-    padding: 20,
-    backgroundColor: '#E0F7FA', // Cor de fundo do Main
+    backgroundColor: '#f5f5f5',
   },
   carouselContainer: {
-    paddingVertical: 10,
     paddingHorizontal: 10,
     backgroundColor: '#f5f5f5',
   },
   carouselItem: {
     marginHorizontal: 10,
     padding: 10,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: '#FFEC5C',
     borderRadius: 8,
     maxHeight: 40,
     marginTop: 30,
-    textAlign: 'center',
-    alignContent: 'center',
   },
   carouselText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
     fontWeight: 'bold',
+  },
+  text: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginVertical: 20,
   },
 });
 
