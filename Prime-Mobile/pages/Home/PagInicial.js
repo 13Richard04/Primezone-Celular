@@ -1,7 +1,7 @@
 // src/Pages/Home/Home.js
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import Header from '../../components/Header/Header';
+import Header from '../../components/Header/Header'
 import Footer from '../../components/Footer/Footer';
 
 const Home = () => {
@@ -22,6 +22,9 @@ const Home = () => {
           <View key={index} style={styles.carouselItem}>
             <Text style={styles.carouselText}>{materia}</Text>
           </View>
+
+          
+
         ))}
       </ScrollView>
       <Footer />
