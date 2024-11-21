@@ -31,7 +31,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 70,
-    backgroundColor: '#FFEC5C'
+    backgroundColor: '#FFEC5C',
+    paddingTop: 15
   },
   footerImages: {
     flexDirection: 'row', // Alinha as imagens em uma linha (colunas)
