@@ -51,7 +51,6 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   carouselWrapper: {
     maxHeight: 100, // Define a altura máxima do carrossel
