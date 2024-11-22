@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: 'black',
     maxHeight: 80,
+    height: 80,
   },
   carouselItem: {
     marginHorizontal: 10,
