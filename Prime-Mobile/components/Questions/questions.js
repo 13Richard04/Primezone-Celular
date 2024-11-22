@@ -30,5 +30,23 @@ export const questions = [
         name: 'RD',
         question: 'Explique a teoria do Sales Trabalhar(só teoria, não é realidade).',
       },
+      {
+        id: 5,
+        imageSource: require('../../assets/Images/profileFooter.png'),
+        name: 'RD',
+        question: 'Explique a teoria do Sales Trabalhar(só teoria, não é realidade).',
+      },
+      {
+        id: 5,
+        imageSource: require('../../assets/Images/profileFooter.png'),
+        name: 'RD',
+        question: 'Explique a teoria do Sales Trabalhar(só teoria, não é realidade).',
+      },
+      {
+        id: 5,
+        imageSource: require('../../assets/Images/profileFooter.png'),
+        name: 'RD',
+        question: 'Explique a teoria do Sales Trabalhar(só teoria, não é realidade).',
+      },
   ];
   

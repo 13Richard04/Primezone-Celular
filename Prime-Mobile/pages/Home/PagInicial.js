@@ -11,18 +11,21 @@ const Home = () => {
   return (
     <View style={styles.container}>
       <Header />
-      {/* Carrossel de matérias */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.carouselContainer}
-      >
-        {materias.map((materia, index) => (
-          <View key={index} style={styles.carouselItem}>
-            <Text style={styles.carouselText}>{materia}</Text>
-          </View>
-        ))}
-      </ScrollView>
+      
+      {/* Envolve o ScrollView em uma View controlada */}
+      <View style={styles.carouselWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.carouselContainer}
+        >
+          {materias.map((materia, index) => (
+            <View key={index} style={styles.carouselItem}>
+              <Text style={styles.carouselText}>{materia}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Container de questões com rolagem vertical */}
       <ScrollView
@@ -48,21 +51,26 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+  },
+  carouselWrapper: {
+    maxHeight: 100, // Define a altura máxima do carrossel
+    backgroundColor: '#054C69',
+    borderTopWidth: 1,
+    borderTopColor: 'black',
   },
   carouselContainer: {
     paddingHorizontal: 10,
-    backgroundColor: 'black',
-    maxHeight: 80,
-    height: 80,
+    paddingVertical: 15,
   },
   carouselItem: {
     marginHorizontal: 10,
     padding: 8,
-    backgroundColor: '#FFEC5C',
+    backgroundColor: 'rgba(217, 217, 217, 0.15)',
+    borderWidth: 1,
+    borderColor: 'black',
     borderRadius: 8,
-    maxHeight: 40,
-    marginTop: 20,  // Diminui o espaçamento superior do carrossel
+    height: 40, // Ajusta a altura dos itens do carrossel
+    justifyContent: 'center', // Centraliza o texto verticalmente
   },
   carouselText: {
     fontSize: 16,
@@ -70,12 +78,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   questionsScroll: {
-    flex: 1, // Impede que o ScrollView das perguntas afete o carrossel
+    flex: 1,
   },
   questionsContainer: {
     paddingHorizontal: 10,
-    backgroundColor: 'grey',
-    paddingTop: 10,  // Garante que o conteúdo das perguntas comece próximo do topo
+    backgroundColor: '#054C69',
+    paddingTop: 10,
   },
   questionBox: {
     backgroundColor: '#fff',
