@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../DB/firebaseConfig';  // Importe a configuração do Firebase
+import { auth } from '../../DB/firebaseConfig'; // Importe a configuração do Firebase
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Importe o AsyncStorage
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -10,18 +11,49 @@ export default function LoginPage({ navigation }) {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        Alert.alert("Sucesso", "Login realizado com sucesso!");
-        navigation.navigate('Home'); // Navegar para a página inicial (Home) após o login
-      })
-      .catch((error) => {
-        Alert.alert("Erro", error.message);
-      });
+  useEffect(() => {
+    // Verifica se há informações salvas de login
+    const checkRememberedUser = async () => {
+      try {
+        const storedEmail = await AsyncStorage.getItem('email');
+        const storedPassword = await AsyncStorage.getItem('password');
+        const storedRememberMe = await AsyncStorage.getItem('rememberMe');
+        
+        if (storedRememberMe === 'true') {
+          setEmail(storedEmail);
+          setPassword(storedPassword);
+          setRememberMe(true);
+        }
+      } catch (error) {
+        console.error('Erro ao recuperar dados armazenados', error);
+      }
+    };
+
+    checkRememberedUser();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      Alert.alert("Sucesso", "Login realizado com sucesso!");
+
+      // Se o usuário marcar a opção "Lembrar de mim", salve as credenciais
+      if (rememberMe) {
+        await AsyncStorage.setItem('email', email);
+        await AsyncStorage.setItem('password', password);
+        await AsyncStorage.setItem('rememberMe', 'true');
+      } else {
+        await AsyncStorage.removeItem('email');
+        await AsyncStorage.removeItem('password');
+        await AsyncStorage.setItem('rememberMe', 'false');
+      }
+
+      navigation.navigate('Home');
+    } catch (error) {
+      Alert.alert("Erro", error.message);
+    }
   };
 
-  // Função para lidar com a recuperação de senha
   const handleForgotPassword = () => {
     if (!email) {
       Alert.alert("Erro", "Por favor, insira seu email para recuperação de senha.");
@@ -31,7 +63,7 @@ export default function LoginPage({ navigation }) {
     sendPasswordResetEmail(auth, email)
       .then(() => {
         Alert.alert("Sucesso", "Enviamos um link para redefinição de senha para o seu email.");
-        navigation.navigate('Home'); // Navegar para a página inicial (Home) após o envio do link
+        navigation.navigate('Home');
       })
       .catch((error) => {
         Alert.alert("Erro", error.message);
