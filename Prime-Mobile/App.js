@@ -8,6 +8,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import HomePage from './pages/Home/PagInicial'; // Substitua pelo caminho correto
 import LoginPage from './pages/Logar/Logar'; // Substitua pelo caminho correto
 import RegisterPage from './pages/Cadastro/Cadastro'; // Substitua pelo caminho correto
+import Perfil from './pages/Perfil/Perfil';
+
 
 const Stack = createStackNavigator();
 
@@ -51,6 +53,14 @@ const Rotas = () => {
         <Stack.Screen 
           name="Home" 
           component={HomePage} 
+          options={{
+            headerShown: false, // Pode personalizar ou ocultar
+          }} 
+        />
+
+        <Stack.Screen 
+          name="Perfil" 
+          component={Perfil} 
           options={{
             headerShown: false, // Pode personalizar ou ocultar
           }} 
