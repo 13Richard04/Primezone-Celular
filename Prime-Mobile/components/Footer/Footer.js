@@ -11,10 +11,14 @@ const Footer = ({ navigation }) => {
             style={styles.footerImage}
           />
         </TouchableOpacity>
-        <Image
-          source={require('../../assets/Images/bookFooter.png')}
-          style={styles.footerImage}
-        />
+
+        <TouchableOpacity onPress={() => navigation.navigate('CentralAjuda')}>
+          <Image
+            source={require('../../assets/Images/bookFooter.png')}
+            style={styles.footerImage}
+          />
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
           <Image
             source={require('../../assets/Images/profileFooter.png')}

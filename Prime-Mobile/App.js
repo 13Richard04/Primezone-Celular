@@ -9,6 +9,7 @@ import HomePage from './pages/Home/PagInicial'; // Substitua pelo caminho corret
 import LoginPage from './pages/Logar/Logar'; // Substitua pelo caminho correto
 import RegisterPage from './pages/Cadastro/Cadastro'; // Substitua pelo caminho correto
 import Perfil from './pages/Perfil/Perfil';
+import CentralAjuda from './pages/CentralAjuda/CentralAjuda';
 
 
 const Stack = createStackNavigator();
@@ -37,33 +38,41 @@ const Rotas = () => {
         <Stack.Screen name="Login" component={LoginPage} />
 
         {/* Página de cadastro */}
-        <Stack.Screen 
-          name="Cadastro" 
-          component={RegisterPage} 
+        <Stack.Screen
+          name="Cadastro"
+          component={RegisterPage}
           options={{
             headerShown: true, // Exibe o cabeçalho apenas nessa página
             headerTitle: 'Cadastro',
             headerStyle: { backgroundColor: '#003b5a' },
             headerTintColor: '#fff', // Cor do texto do cabeçalho
             headerLeft: null, // Remove o botão de voltar
-          }} 
+          }}
         />
 
         {/* Página inicial após login */}
-        <Stack.Screen 
-          name="Home" 
-          component={HomePage} 
+        <Stack.Screen
+          name="Home"
+          component={HomePage}
           options={{
             headerShown: false, // Pode personalizar ou ocultar
-          }} 
+          }}
         />
 
-        <Stack.Screen 
-          name="Perfil" 
-          component={Perfil} 
+        <Stack.Screen
+          name="Perfil"
+          component={Perfil}
           options={{
             headerShown: false, // Pode personalizar ou ocultar
-          }} 
+          }}
+        />
+
+        <Stack.Screen
+          name="CentralAjuda"
+          component={CentralAjuda}
+          options={{
+            headerShown: false, // Pode personalizar ou ocultar
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
