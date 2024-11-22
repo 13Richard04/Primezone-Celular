@@ -14,12 +14,13 @@ export default function LoginPage({ navigation }) {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         Alert.alert("Sucesso", "Login realizado com sucesso!");
-        // Navegar para a página principal ou home
+        navigation.navigate('Home'); // Navegar para a página inicial (Home) após o login
       })
       .catch((error) => {
         Alert.alert("Erro", error.message);
       });
   };
+  
 
   return (
     <View style={styles.container}>

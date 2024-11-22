@@ -16,16 +16,17 @@ export default function SignUpPage({ navigation }) {
       Alert.alert("Erro", "As senhas não coincidem!");
       return;
     }
-
+  
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
-        navigation.navigate('Login'); // Redireciona para a página de login após cadastro
+        navigation.navigate('Home'); // Navegar para a página inicial (Home) após o cadastro
       })
       .catch((error) => {
         Alert.alert("Erro", error.message);
       });
   };
+  
 
   return (
     <View style={styles.container}>
