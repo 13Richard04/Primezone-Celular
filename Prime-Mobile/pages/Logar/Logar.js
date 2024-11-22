@@ -1,12 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../DB/firebaseConfig';  // Importe a configuração do Firebase
 
 export default function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleLogin = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        Alert.alert("Sucesso", "Login realizado com sucesso!");
+        // Navegar para a página principal ou home
+      })
+      .catch((error) => {
+        Alert.alert("Erro", error.message);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -45,11 +58,7 @@ export default function LoginPage({ navigation }) {
 
         <View style={styles.options}>
           <TouchableOpacity onPress={() => setRememberMe(!rememberMe)} style={styles.checkboxContainer}>
-            <FontAwesome
-              name={rememberMe ? "check-square" : "square-o"}
-              size={24}
-              color="#333"
-            />
+            <FontAwesome name={rememberMe ? "check-square" : "square-o"} size={24} color="#333" />
             <Text style={styles.checkboxLabel}>Lembrar de mim</Text>
           </TouchableOpacity>
           <TouchableOpacity>
@@ -57,25 +66,20 @@ export default function LoginPage({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Enviar</Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
-  <Text style={styles.registerText}>
-    Não tem uma conta? <Text style={styles.registerLink}>Cadastre-se</Text>
-  </Text>
-</TouchableOpacity>
-
-
-        <TouchableOpacity style={styles.googleButton}>
-          <FontAwesome name="google" size={20} color="#333" />
-          <Text style={styles.googleButtonText}>Entrar com Google</Text>
+          <Text style={styles.registerText}>
+            Não tem uma conta? <Text style={styles.registerLink}>Cadastre-se</Text>
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

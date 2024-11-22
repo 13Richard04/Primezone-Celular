@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../DB/firebaseConfig';  // Importe a configuração do Firebase
 
 export default function SignUpPage({ navigation }) {
   const [name, setName] = useState('');
@@ -8,6 +10,22 @@ export default function SignUpPage({ navigation }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleSignUp = () => {
+    if (password !== confirmPassword) {
+      Alert.alert("Erro", "As senhas não coincidem!");
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+        navigation.navigate('Login'); // Redireciona para a página de login após cadastro
+      })
+      .catch((error) => {
+        Alert.alert("Erro", error.message);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -72,26 +90,20 @@ export default function SignUpPage({ navigation }) {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
 
-        {/* Botão de redirecionamento para a página de Login */}
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.loginText}>
             Já tem uma conta? <Text style={styles.loginLink}>Faça login</Text>
           </Text>
         </TouchableOpacity>
-
-        {/* Botão de login com Google */}
-        <TouchableOpacity style={styles.googleButton}>
-          <FontAwesome name="google" size={20} color="#333" />
-          <Text style={styles.googleButtonText}>Cadastrar com Google</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
