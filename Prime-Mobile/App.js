@@ -13,7 +13,7 @@ const Rotas = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Logar"
+        initialRouteName="Cadastro"
         screenOptions={{
           headerShown: false, // Oculta o cabeçalho por padrão
         }}
