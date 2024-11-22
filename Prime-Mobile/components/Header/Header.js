@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TextInput } from 'react-native';
 
@@ -17,11 +18,12 @@ const styles = StyleSheet.create({
   header: {
     width: Dimensions.get('window').width, // Largura de 100%
     padding: 20,
+    paddingTop: StatusBar.currentHeight || 40,
     backgroundColor: '#054C69',
     alignItems: 'flex-start',
     paddingLeft: 15,
     gap: 12,
-    height: 120, // Altura ajustada para o Header
+    height: 135, // Altura ajustada para o Header
   },
 
   headerText: {

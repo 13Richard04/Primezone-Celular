@@ -4,7 +4,7 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import { questions } from '../../components/Questions/questions';
 
-const Home = () => {
+const Home = ({ navigation }) => {
   // Lista de matérias
   const materias = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Inglês'];
 
@@ -43,7 +43,7 @@ const Home = () => {
         ))}
       </ScrollView>
 
-      <Footer />
+      <Footer navigation={navigation}/>
     </View>
   );
 };
