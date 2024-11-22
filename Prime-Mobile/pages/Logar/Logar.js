@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../../DB/firebaseConfig';  // Importe a configuração do Firebase
 
 export default function LoginPage({ navigation }) {
@@ -20,7 +20,23 @@ export default function LoginPage({ navigation }) {
         Alert.alert("Erro", error.message);
       });
   };
-  
+
+  // Função para lidar com a recuperação de senha
+  const handleForgotPassword = () => {
+    if (!email) {
+      Alert.alert("Erro", "Por favor, insira seu email para recuperação de senha.");
+      return;
+    }
+
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        Alert.alert("Sucesso", "Enviamos um link para redefinição de senha para o seu email.");
+        navigation.navigate('Home'); // Navegar para a página inicial (Home) após o envio do link
+      })
+      .catch((error) => {
+        Alert.alert("Erro", error.message);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -62,7 +78,7 @@ export default function LoginPage({ navigation }) {
             <FontAwesome name={rememberMe ? "check-square" : "square-o"} size={24} color="#333" />
             <Text style={styles.checkboxLabel}>Lembrar de mim</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleForgotPassword}>
             <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>
           </TouchableOpacity>
         </View>
@@ -80,7 +96,6 @@ export default function LoginPage({ navigation }) {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -188,19 +203,5 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     color: '#f4b400',
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 15,
-  },
-  googleButtonText: {
-    color: '#333',
-    fontSize: 16,
-    marginLeft: 5,
   },
 });
