@@ -5,7 +5,7 @@ const Footer = ({ navigation }) => {
   return (
     <View style={styles.footer}>
       <View style={styles.footerImages}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+        <TouchableOpacity onPress={() => navigation.navigate('PerguntasMaterias')}>
           <Image
             source={require('../../assets/Images/mainFooter.png')}
             style={styles.footerImage}

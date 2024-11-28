@@ -48,7 +48,7 @@ export default function LoginPage({ navigation }) {
         await AsyncStorage.setItem('rememberMe', 'false');
       }
 
-      navigation.navigate('Home');
+      navigation.navigate('PerguntasMaterias');
     } catch (error) {
       Alert.alert("Erro", error.message);
     }
@@ -63,7 +63,7 @@ export default function LoginPage({ navigation }) {
     sendPasswordResetEmail(auth, email)
       .then(() => {
         Alert.alert("Sucesso", "Enviamos um link para redefinição de senha para o seu email.");
-        navigation.navigate('Home');
+        navigation.navigate('PerguntasMaterias');
       })
       .catch((error) => {
         Alert.alert("Erro", error.message);
@@ -72,7 +72,7 @@ export default function LoginPage({ navigation }) {
 
   const handleGuestLogin = () => {
     // Navegar diretamente para a home como visitante
-    navigation.navigate('Home');
+    navigation.navigate('PerguntasMaterias');
   };
 
   return (
