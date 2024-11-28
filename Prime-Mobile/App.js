@@ -5,7 +5,7 @@ import { auth } from './DB/firebaseConfig';  // Importe o objeto de autenticaç�
 import { onAuthStateChanged } from 'firebase/auth';
 
 // Importando as páginas
-import PerguntasMaterias from './pages/Home/PerguntasMaterias';
+import PerguntasMaterias from './pages/PerguntaMateria/PerguntasMaterias';
 import LoginPage from './pages/Logar/Logar'; // Substitua pelo caminho correto
 import RegisterPage from './pages/Cadastro/Cadastro'; // Substitua pelo caminho correto
 import Perfil from './pages/Perfil/Perfil';

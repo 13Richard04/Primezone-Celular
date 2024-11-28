@@ -102,10 +102,10 @@ const PerguntasMaterias = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.questionsContainer} style={styles.questionsScroll}>
         {filteredQuestions.map((item) => (
           <TouchableOpacity 
-            key={item.id} 
-            style={styles.questionBox}
-            onPress={() => navigation.navigate('PerguntaPage')}  // Navegação para PerguntarPage
-          >
+          key={item.id} 
+          style={styles.questionBox}
+          onPress={() => navigation.navigate('PerguntaPage', { questionId: item.id })} // Passando o ID da pergunta
+        >        
             <View style={styles.questionHeader}>
               <Image source={{ uri: item.fotoPerfil }} style={styles.profileImage} />
               <Text style={styles.name}>{item.nome}</Text>
