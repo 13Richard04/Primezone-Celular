@@ -20,7 +20,7 @@ export default function SignUpPage({ navigation }) {
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
-        navigation.navigate('Home'); // Navegar para a página inicial (Home) após o cadastro
+        navigation.navigate('PerguntasMaterias'); // Navegar para a página inicial (Home) após o cadastro
       })
       .catch((error) => {
         Alert.alert("Erro", error.message);
