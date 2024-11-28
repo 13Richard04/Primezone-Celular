@@ -1,38 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { collection, onSnapshot } from 'firebase/firestore'; // Firestore para ouvir as perguntas
-import { db } from '../../DB/firebaseConfig'; // Configuração do Firebase
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from '../../DB/firebaseConfig'; 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 
 const Home = ({ navigation }) => {
-  const [questions, setQuestions] = useState([]); // Estado para armazenar perguntas
-  const [expandedQuestions, setExpandedQuestions] = useState({}); // Controle de "Ver mais"
+  const [questions, setQuestions] = useState([]);
+  const [expandedQuestions, setExpandedQuestions] = useState({});
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [searchText, setSearchText] = useState(''); // Estado para armazenar o texto de pesquisa
 
-  const materias = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Inglês'];
+  const materias = [
+    { name: 'matematica', label: 'Matemática' },
+    { name: 'portugues', label: 'Português' },
+    { name: 'quimica', label: 'Química' },
+    { name: 'biologia', label: 'Biologia' },
+    { name: 'fisica', label: 'Física' },
+    { name: 'geografia', label: 'Geografia' },
+    { name: 'historia', label: 'História' },
+    { name: 'sociologia', label: 'Sociologia' },
+  ];
 
   useEffect(() => {
-    // Referência para a coleção "perguntas"
     const perguntasRef = collection(db, 'perguntas');
+    const perguntasQuery = selectedSubject
+      ? query(perguntasRef, where('materia', '==', selectedSubject))
+      : perguntasRef;
 
-    // Listener para atualizações em tempo real
-    const unsubscribe = onSnapshot(perguntasRef, (snapshot) => {
+    const unsubscribe = onSnapshot(perguntasQuery, (snapshot) => {
       const perguntasList = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setQuestions(perguntasList); // Atualiza o estado com os dados do Firestore
+      setQuestions(perguntasList);
     });
 
-    // Limpa a assinatura quando o componente é desmontado
     return () => unsubscribe();
-  }, []);
+  }, [selectedSubject]);
 
   const toggleExpand = (id) => {
     setExpandedQuestions((prevState) => ({
       ...prevState,
       [id]: !prevState[id],
     }));
+  };
+
+  const handleSubjectPress = (materia) => {
+    if (selectedSubject === materia) {
+      setSelectedSubject('');
+    } else {
+      setSelectedSubject(materia);
+    }
   };
 
   const renderQuestionText = (text, id) => {
@@ -59,25 +78,30 @@ const Home = ({ navigation }) => {
     );
   };
 
+  // Função de filtro das questões com base no texto da pesquisa
+  const filteredQuestions = questions.filter((item) =>
+    item.pergunta.toLowerCase().includes(searchText.toLowerCase()) // Filtro insensível a maiúsculas/minúsculas
+  );
+
   return (
     <View style={styles.container}>
-      <Header />
+      <Header onSearch={setSearchText} /> {/* Passa a função setSearchText para o Header */}
       <View style={styles.carouselWrapper}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.carouselContainer}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer}>
           {materias.map((materia, index) => (
-            <View key={index} style={styles.carouselItem}>
-              <Text style={styles.carouselText}>{materia}</Text>
-            </View>
+            <TouchableOpacity
+              key={index}
+              style={[styles.carouselItem, selectedSubject === materia.name && styles.selectedCarouselItem]}
+              onPress={() => handleSubjectPress(materia.name)}
+            >
+              <Text style={styles.carouselText}>{materia.label}</Text>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
 
       <ScrollView contentContainerStyle={styles.questionsContainer} style={styles.questionsScroll}>
-        {questions.map((item) => (
+        {filteredQuestions.map((item) => (
           <View key={item.id} style={styles.questionBox}>
             <View style={styles.questionHeader}>
               <Image source={{ uri: item.fotoPerfil }} style={styles.profileImage} />
@@ -110,12 +134,15 @@ const styles = StyleSheet.create({
   carouselItem: {
     marginHorizontal: 10,
     padding: 8,
-    backgroundColor: 'rgba(217, 217, 217, 0.15)',
+    backgroundColor: 'rgba(217, 217, 217, 0.25)',
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: 8,
     height: 40,
     justifyContent: 'center',
+  },
+  selectedCarouselItem: {
+    backgroundColor: 'rgba(217, 217, 217, 0.05)',
   },
   carouselText: {
     fontSize: 16,
@@ -130,6 +157,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#054C69',
     paddingTop: 10,
     paddingBottom: 70,
+    minHeight: 510,
   },
   questionBox: {
     backgroundColor: '#fff',
