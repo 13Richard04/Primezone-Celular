@@ -5,11 +5,11 @@ import { db } from '../../DB/firebaseConfig';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 
-const Home = ({ navigation }) => {
+const PerguntasMaterias = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
   const [expandedQuestions, setExpandedQuestions] = useState({});
   const [selectedSubject, setSelectedSubject] = useState('');
-  const [searchText, setSearchText] = useState(''); // Estado para armazenar o texto de pesquisa
+  const [searchText, setSearchText] = useState('');
 
   const materias = [
     { name: 'matematica', label: 'Matemática' },
@@ -78,14 +78,13 @@ const Home = ({ navigation }) => {
     );
   };
 
-  // Função de filtro das questões com base no texto da pesquisa
   const filteredQuestions = questions.filter((item) =>
-    item.pergunta.toLowerCase().includes(searchText.toLowerCase()) // Filtro insensível a maiúsculas/minúsculas
+    item.pergunta.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
     <View style={styles.container}>
-      <Header onSearch={setSearchText} /> {/* Passa a função setSearchText para o Header */}
+      <Header onSearch={setSearchText} />
       <View style={styles.carouselWrapper}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.carouselContainer}>
           {materias.map((materia, index) => (
@@ -102,13 +101,17 @@ const Home = ({ navigation }) => {
 
       <ScrollView contentContainerStyle={styles.questionsContainer} style={styles.questionsScroll}>
         {filteredQuestions.map((item) => (
-          <View key={item.id} style={styles.questionBox}>
+          <TouchableOpacity 
+            key={item.id} 
+            style={styles.questionBox}
+            onPress={() => navigation.navigate('PerguntaPage')}  // Navegação para PerguntarPage
+          >
             <View style={styles.questionHeader}>
               <Image source={{ uri: item.fotoPerfil }} style={styles.profileImage} />
               <Text style={styles.name}>{item.nome}</Text>
             </View>
             {renderQuestionText(item.pergunta, item.id)}
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 
@@ -197,4 +200,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default PerguntasMaterias;

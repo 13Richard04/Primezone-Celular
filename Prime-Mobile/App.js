@@ -5,12 +5,12 @@ import { auth } from './DB/firebaseConfig';  // Importe o objeto de autenticaç�
 import { onAuthStateChanged } from 'firebase/auth';
 
 // Importando as páginas
-import HomePage from './pages/Home/PagInicial'; // Substitua pelo caminho correto
+import PerguntasMaterias from './pages/Home/PerguntasMateriasaterias';
 import LoginPage from './pages/Logar/Logar'; // Substitua pelo caminho correto
 import RegisterPage from './pages/Cadastro/Cadastro'; // Substitua pelo caminho correto
 import Perfil from './pages/Perfil/Perfil';
 import CentralAjuda from './pages/CentralAjuda/CentralAjuda';
-
+import PerguntaPage from './pages/Pergunta/Pergunta';
 
 const Stack = createStackNavigator();
 
@@ -29,7 +29,7 @@ const Rotas = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={user ? "Home" : "Login"} // Direciona para Home ou Login dependendo da autenticação
+        initialRouteName={user ? "PerguntasMaterias" : "Login"} // Direciona para Home ou Login dependendo da autenticação
         screenOptions={{
           headerShown: false, // Oculta o cabeçalho por padrão
         }}
@@ -52,8 +52,8 @@ const Rotas = () => {
 
         {/* Página inicial após login */}
         <Stack.Screen
-          name="Home"
-          component={HomePage}
+          name="PerguntasMaterias"
+          component={PerguntasMaterias}
           options={{
             headerShown: false, // Pode personalizar ou ocultar
           }}
@@ -70,6 +70,14 @@ const Rotas = () => {
         <Stack.Screen
           name="CentralAjuda"
           component={CentralAjuda}
+          options={{
+            headerShown: false, // Pode personalizar ou ocultar
+          }}
+        />
+
+        <Stack.Screen
+          name="PerguntaPage"
+          component={PerguntaPage}
           options={{
             headerShown: false, // Pode personalizar ou ocultar
           }}
