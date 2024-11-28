@@ -1,7 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore'; // Firestore para perguntas
 
-// Sua configuração do Firebase
+// Configuração do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyColq8nh741FW-DeAVRdc77ZcC9FP-Blp8",
     authDomain: "teste-denovo-1d43c.firebaseapp.com",
@@ -13,6 +14,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const auth = getAuth(app); // Autenticação
+const db = getFirestore(app); // Firestore
 
-export { auth };
+export { auth, db };
+

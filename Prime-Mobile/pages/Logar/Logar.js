@@ -70,6 +70,11 @@ export default function LoginPage({ navigation }) {
       });
   };
 
+  const handleGuestLogin = () => {
+    // Navegar diretamente para a home como visitante
+    navigation.navigate('Home');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.box}>
@@ -124,6 +129,12 @@ export default function LoginPage({ navigation }) {
             Não tem uma conta? <Text style={styles.registerLink}>Cadastre-se</Text>
           </Text>
         </TouchableOpacity>
+
+        {/* Link "Entrar como visitante" com estilo de botão preto e linha embaixo */}
+        <TouchableOpacity onPress={handleGuestLogin}>
+          <Text style={styles.guestLoginText}>Entrar como visitante</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -235,5 +246,15 @@ const styles = StyleSheet.create({
   },
   registerLink: {
     color: '#f4b400',
+  },
+  // Estilo para "Entrar como visitante"
+  guestLoginText: {
+    color: '#000', // texto preto
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+    borderBottomWidth: 1, // linha embaixo
+    borderBottomColor: '#000', // cor da linha
+    paddingBottom: 3, // espaço entre o texto e a linha
   },
 });

@@ -1,18 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
+import { collection, onSnapshot } from 'firebase/firestore'; // Firestore para ouvir as perguntas
+import { db } from '../../DB/firebaseConfig'; // Configuração do Firebase
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
-import { questions } from '../../components/Questions/questions';
 
 const Home = ({ navigation }) => {
-  // Lista de matérias
+  const [questions, setQuestions] = useState([]); // Estado para armazenar perguntas
   const materias = ['Matemática', 'Português', 'História', 'Geografia', 'Ciências', 'Inglês'];
+
+  useEffect(() => {
+    // Referência para a coleção "perguntas"
+    const perguntasRef = collection(db, 'perguntas');
+
+    // Listener para atualizações em tempo real
+    const unsubscribe = onSnapshot(perguntasRef, (snapshot) => {
+      const perguntasList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setQuestions(perguntasList); // Atualiza o estado com os dados do Firestore
+    });
+
+    // Limpa a assinatura quando o componente é desmontado
+    return () => unsubscribe();
+  }, []);
 
   return (
     <View style={styles.container}>
       <Header />
-      
-      {/* Envolve o ScrollView em uma View controlada */}
       <View style={styles.carouselWrapper}>
         <ScrollView
           horizontal
@@ -27,23 +43,19 @@ const Home = ({ navigation }) => {
         </ScrollView>
       </View>
 
-      {/* Container de questões com rolagem vertical */}
-      <ScrollView
-        contentContainerStyle={styles.questionsContainer}
-        style={styles.questionsScroll}
-      >
+      <ScrollView contentContainerStyle={styles.questionsContainer} style={styles.questionsScroll}>
         {questions.map((item) => (
           <View key={item.id} style={styles.questionBox}>
             <View style={styles.questionHeader}>
-              <Image source={item.imageSource} style={styles.profileImage} />
-              <Text style={styles.name}>{item.name}</Text>
+              <Image source={{ uri: item.fotoPerfil }} style={styles.profileImage} />
+              <Text style={styles.name}>{item.nome}</Text>
             </View>
-            <Text style={styles.questionText}>{item.question}</Text>
+            <Text style={styles.questionText}>{item.pergunta}</Text>
           </View>
         ))}
       </ScrollView>
 
-      <Footer navigation={navigation}/>
+      <Footer navigation={navigation} />
     </View>
   );
 };
@@ -53,7 +65,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   carouselWrapper: {
-    maxHeight: 100, // Define a altura máxima do carrossel
+    maxHeight: 100,
     backgroundColor: '#054C69',
     borderTopWidth: 1,
     borderTopColor: 'black',
@@ -69,8 +81,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
     borderRadius: 8,
-    height: 40, // Ajusta a altura dos itens do carrossel
-    justifyContent: 'center', // Centraliza o texto verticalmente
+    height: 40,
+    justifyContent: 'center',
   },
   carouselText: {
     fontSize: 16,
