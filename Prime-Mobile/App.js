@@ -12,6 +12,7 @@ import Perfil from './pages/Perfil/Perfil';
 import CentralAjuda from './pages/CentralAjuda/CentralAjuda';
 import PerguntaPage from './pages/Pergunta/Pergunta';
 import Quemsomos from './pages/Quemseremos/Quemsomos';
+import Home from './pages/Home/Home';
 
 const Stack = createStackNavigator();
 
@@ -48,6 +49,15 @@ const Rotas = () => {
             headerStyle: { backgroundColor: '#003b5a' },
             headerTintColor: '#fff', // Cor do texto do cabeçalho
             headerLeft: null, // Remove o botão de voltar
+          }}
+        />
+
+        {/* Página de Home */}
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerShown: false, // Pode personalizar ou ocultar
           }}
         />
 
