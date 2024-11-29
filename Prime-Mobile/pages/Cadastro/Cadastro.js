@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../DB/firebaseConfig';  // Importe a configuração do Firebase
+import { doc, setDoc } from 'firebase/firestore'; // Funções para manipular Firestore
+import { auth, db } from '../../DB/firebaseConfig'; // Importando auth e Firestore
 
 export default function SignUpPage({ navigation }) {
   const [name, setName] = useState('');
@@ -16,17 +17,27 @@ export default function SignUpPage({ navigation }) {
       Alert.alert("Erro", "As senhas não coincidem!");
       return;
     }
-  
+
     createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
-        navigation.navigate('Home'); // Navegar para a página inicial (Home) após o cadastro
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+
+        // Salvar dados no Firestore
+        try {
+          await setDoc(doc(db, "users", user.uid), {
+            name: name,
+            email: email,
+          });
+          Alert.alert("Sucesso", "Cadastro realizado com sucesso!");
+          navigation.navigate('PerguntasMaterias'); // Próxima tela
+        } catch (error) {
+          Alert.alert("Erro ao salvar os dados", error.message);
+        }
       })
       .catch((error) => {
         Alert.alert("Erro", error.message);
       });
   };
-  
 
   return (
     <View style={styles.container}>
@@ -104,7 +115,6 @@ export default function SignUpPage({ navigation }) {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -192,19 +202,5 @@ const styles = StyleSheet.create({
   },
   loginLink: {
     color: '#f4b400',
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 15,
-  },
-  googleButtonText: {
-    color: '#333',
-    fontSize: 16,
-    marginLeft: 5,
   },
 });
