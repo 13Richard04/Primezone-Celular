@@ -79,11 +79,11 @@ const Home = ({ navigation }) => {
 
       {/* Botões na parte central */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Quemsomos')}>
           <Image source={require('../.././assets/Icons/livrinho.png')} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>Quem Somos?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CentralAjuda')}>
             <Image source={require('../.././assets/Icons/bx--headphone.png')} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>Central de Ajuda</Text>
         </TouchableOpacity>
