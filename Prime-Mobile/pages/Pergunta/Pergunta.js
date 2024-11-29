@@ -1,10 +1,54 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TextInput, Modal, Button, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TextInput, Modal, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Footer from '../../components/Footer/Footer';
+import { doc, collection, getDoc, query, onSnapshot, where } from 'firebase/firestore';
+import { db } from '../../DB/firebaseConfig';
 
-const PerguntaPage = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newAnswer, setNewAnswer] = useState('');
+const PerguntaPage = ({ route, navigation }) => {
+  const { questionId } = route.params; // ID da pergunta passada via navegação
+  const [question, setQuestion] = useState(null); // Estado para os dados da pergunta
+  const [answers, setAnswers] = useState([]); // Estado para as respostas
+  const [loading, setLoading] = useState(true); // Estado de carregamento das respostas
+  const [modalVisible, setModalVisible] = useState(false); // Estado do modal
+  const [newAnswer, setNewAnswer] = useState(''); // Estado para nova resposta
+
+  useEffect(() => {
+    // Função para buscar os dados da pergunta
+    const fetchQuestion = async () => {
+      try {
+        const questionDoc = await getDoc(doc(db, 'perguntas', questionId));
+        if (questionDoc.exists()) {
+          setQuestion({ id: questionDoc.id, ...questionDoc.data() });
+        }
+      } catch (error) {
+        console.error('Erro ao buscar a pergunta:', error);
+      }
+    };
+
+    // Função para buscar as respostas relacionadas à pergunta
+    const fetchAnswers = () => {
+      const answersQuery = query(
+        collection(db, 'respostas'),
+        where('perguntaId', '==', questionId)
+      );
+
+      const unsubscribe = onSnapshot(answersQuery, (snapshot) => {
+        const answersList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAnswers(answersList);
+        setLoading(false);
+      });
+
+      return unsubscribe;
+    };
+
+    fetchQuestion();
+    const unsubscribeAnswers = fetchAnswers();
+
+    return () => unsubscribeAnswers(); // Limpa o listener ao desmontar o componente
+  }, [questionId]);
 
   const handleSendAnswer = () => {
     console.log('Nova resposta:', newAnswer);
@@ -16,51 +60,61 @@ const PerguntaPage = ({ navigation }) => {
     <View style={styles.container}>
       {/* Caixa da Pergunta */}
       <View style={styles.questionBox}>
-        <View style={styles.questionHeader}>
-          {/* Foto e Nome */}
-          <View style={styles.userInfo}>
-            <Image 
-              source={require('../.././assets/Images/profileFooter.png')} // Substitua pela URL da foto
-              style={styles.profileImage} 
-            />
-            <Text style={styles.userName}>Nome do Usuário</Text>
-          </View>
-          {/* Símbolo da Matéria */}
-          <Image 
-            source={{uri: 'https://placekitten.com/20/20'}} // Substitua pela URL do símbolo da matéria
-            style={styles.subjectIcon}
-          />
-        </View>
-        <View style={styles.questionContent}>
-          <Text style={styles.questionText}>Conteúdo da Pergunta...</Text>
-        </View>
-        <View style={styles.questionFooter}>
-          <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.replyButton}>
-            <Text style={styles.replyButtonText}>+ RESPONDER</Text>
-          </TouchableOpacity>
-          <Text style={styles.timestamp}>Horário da Pergunta</Text>
-        </View>
-      </View>
-
-      {/* Respostas com ScrollView */}
-      <ScrollView style={styles.answersContainer} contentContainerStyle={styles.answersContent}>
-        {[1].map((_, index) => (
-          <View key={index} style={styles.answerBox}>
-            <View style={styles.answerHeader}>
-              {/* Foto e Nome da Resposta */}
+        {question && (
+          <>
+            <View style={styles.questionHeader}>
+              {/* Foto e Nome */}
               <View style={styles.userInfo}>
                 <Image 
-                  source={require('../.././assets/Images/profileFooter.png')} // Substitua pela URL da foto
+                  source={{ uri: question.fotoPerfil || '../.././assets/Images/profileFooter.png' }}
                   style={styles.profileImage} 
                 />
-                <Text style={styles.userName}>Nome do Respondente</Text>
+                <Text style={styles.userName}>{question.nome || 'Usuário Anônimo'}</Text>
+              </View>
+              {/* Símbolo da Matéria */}
+              <Image 
+                source={{ uri: question.materiaIcon || 'https://placekitten.com/20/20' }}
+                style={styles.subjectIcon}
+              />
+            </View>
+            <View style={styles.questionContent}>
+              <Text style={styles.questionText}>{question.pergunta}</Text>
+            </View>
+            <View style={styles.questionFooter}>
+              <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.replyButton}>
+                <Text style={styles.replyButtonText}>+ RESPONDER</Text>
+              </TouchableOpacity>
+              {/* <Text style={styles.timestamp}>{question.timestamp || 'Horário da Pergunta'}</Text> */}
+            </View>
+          </>
+        )}
+      </View>
+
+      {/* Respostas */}
+      <ScrollView style={styles.answersContainer} contentContainerStyle={styles.answersContent}>
+        <Text style={styles.answersTitle}>Respostas:</Text>
+        {loading ? (
+          <ActivityIndicator size="large" color="#FFF" />
+        ) : answers.length > 0 ? (
+          answers.map((answer) => (
+            <View key={answer.id} style={styles.answerBox}>
+              <View style={styles.answerHeader}>
+                <View style={styles.userInfo}>
+                  <Image 
+                    source={{ uri: answer.fotoPerfil || '../.././assets/Images/profileFooter.png' }}
+                    style={styles.profileImage} 
+                  />
+                  <Text style={styles.userName}>{answer.nome || 'Usuário Anônimo'}</Text>
+                </View>
+              </View>
+              <View style={styles.answerContent}>
+                <Text style={styles.answerText}>{answer.texto}</Text>
               </View>
             </View>
-            <View style={styles.answerContent}>
-              <Text style={styles.answerText}>Conteúdo da Resposta...</Text>
-            </View>
-          </View>
-        ))}
+          ))
+        ) : (
+          <Text style={styles.noResponsesText}>Nenhuma resposta encontrada.</Text>
+        )}
       </ScrollView>
 
       {/* Modal para adicionar resposta */}
@@ -81,13 +135,14 @@ const PerguntaPage = ({ navigation }) => {
               multiline
             />
             <View style={styles.modalButtons}>
-              <Button style={styles.RespostaButton} title="Cancelar" onPress={() => setModalVisible(false)} />
-              <Button style={styles.RespostaButton} title="Enviar" onPress={handleSendAnswer} />
+              <Button title="Cancelar" onPress={() => setModalVisible(false)} />
+              <Button title="Enviar" onPress={handleSendAnswer} />
             </View>
           </View>
         </View>
       </Modal>
 
+      {/* Footer */}
       <Footer navigation={navigation} />
     </View>
   );
