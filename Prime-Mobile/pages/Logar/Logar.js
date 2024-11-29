@@ -72,7 +72,7 @@ export default function LoginPage({ navigation }) {
 
   const handleGuestLogin = () => {
     // Navegar diretamente para a home como visitante
-    navigation.navigate('PerguntasMaterias');
+    navigation.navigate('Home');
   };
 
   return (
