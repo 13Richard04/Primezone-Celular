@@ -56,20 +56,20 @@ const PerguntasMaterias = ({ navigation }) => {
 
   const handleCreateQuestion = async () => {
     if (newQuestionText.trim() && selectedMateria) {
-      // Criação da pergunta no Firestore
       await addDoc(collection(db, 'perguntas'), {
         pergunta: newQuestionText,
         materia: selectedMateria,
         nome: 'Nome do Usuário', // Substitua pelo nome do usuário
-        fotoPerfil: '', // Coloque a URL da foto do perfil do usuário
+        fotoPerfil: 'https://lncimg.lance.com.br/cdn-cgi/image/width=850,quality=75,format=webp/uploads/2024/11/cr7-alnassr.jpeg', // URL da foto padrão
       });
       setNewQuestionText('');
       setSelectedMateria('');
-      setModalVisible(false); // Fecha o modal após envio
+      setModalVisible(false);
     } else {
       alert('Preencha todos os campos');
     }
   };
+  
 
   const renderQuestionText = (text, id) => {
     const isExpanded = expandedQuestions[id];
@@ -95,9 +95,12 @@ const PerguntasMaterias = ({ navigation }) => {
     );
   };
 
-  const filteredQuestions = questions.filter((item) =>
-    item.pergunta.toLowerCase().includes(searchText.toLowerCase())
-  );
+  // Filtra as perguntas com base na pesquisa e na matéria selecionada
+  const filteredQuestions = questions.filter((item) => {
+    const matchesSearch = item.pergunta.toLowerCase().includes(searchText.toLowerCase());
+    const matchesSubject = selectedSubject ? item.materia === selectedSubject : true;
+    return matchesSearch && matchesSubject;
+  });
 
   return (
     <View style={styles.container}>
@@ -190,6 +193,7 @@ const PerguntasMaterias = ({ navigation }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
