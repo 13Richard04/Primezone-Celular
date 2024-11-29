@@ -11,6 +11,7 @@ import RegisterPage from './pages/Cadastro/Cadastro'; // Substitua pelo caminho 
 import Perfil from './pages/Perfil/Perfil';
 import CentralAjuda from './pages/CentralAjuda/CentralAjuda';
 import PerguntaPage from './pages/Pergunta/Pergunta';
+import Quemsomos from './pages/Quemsomos/Quemsomos';
 
 const Stack = createStackNavigator();
 
@@ -78,6 +79,13 @@ const Rotas = () => {
         <Stack.Screen
           name="PerguntaPage"
           component={PerguntaPage}
+          options={{
+            headerShown: false, // Pode personalizar ou ocultar
+          }}
+        />
+        <Stack.Screen
+          name="Quemsomos"
+          component={Quemsomos}
           options={{
             headerShown: false, // Pode personalizar ou ocultar
           }}
