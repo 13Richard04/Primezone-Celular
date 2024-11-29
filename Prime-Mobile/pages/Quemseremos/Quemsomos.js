@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, StatusBar, Alert } fro
 
 import Footer from '../../components/Footer/Footer';
 
-const Quemsomos = () => {
+const Quemsomos = ({ navigation }) => {
     return (
         <View style={styles.container}>
           <View style={styles.box}>
