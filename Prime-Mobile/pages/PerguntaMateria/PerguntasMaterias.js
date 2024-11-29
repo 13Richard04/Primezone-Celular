@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { View, Text, ScrollView, Image, StyleSheet, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../DB/firebaseConfig'; 
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import { onSnapshot } from 'firebase/firestore';
 
 const PerguntasMaterias = ({ navigation }) => {
   const [questions, setQuestions] = useState([]);
   const [expandedQuestions, setExpandedQuestions] = useState({});
   const [selectedSubject, setSelectedSubject] = useState('');
   const [searchText, setSearchText] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);  // Controle do modal
+  const [newQuestionText, setNewQuestionText] = useState('');  // Texto da nova pergunta
+  const [selectedMateria, setSelectedMateria] = useState('');  // Matéria selecionada no modal
 
   const materias = [
     { name: 'matematica', label: 'Matemática' },
@@ -24,11 +28,7 @@ const PerguntasMaterias = ({ navigation }) => {
 
   useEffect(() => {
     const perguntasRef = collection(db, 'perguntas');
-    const perguntasQuery = selectedSubject
-      ? query(perguntasRef, where('materia', '==', selectedSubject))
-      : perguntasRef;
-
-    const unsubscribe = onSnapshot(perguntasQuery, (snapshot) => {
+    const unsubscribe = onSnapshot(perguntasRef, (snapshot) => {
       const perguntasList = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -37,7 +37,7 @@ const PerguntasMaterias = ({ navigation }) => {
     });
 
     return () => unsubscribe();
-  }, [selectedSubject]);
+  }, []);
 
   const toggleExpand = (id) => {
     setExpandedQuestions((prevState) => ({
@@ -51,6 +51,23 @@ const PerguntasMaterias = ({ navigation }) => {
       setSelectedSubject('');
     } else {
       setSelectedSubject(materia);
+    }
+  };
+
+  const handleCreateQuestion = async () => {
+    if (newQuestionText.trim() && selectedMateria) {
+      // Criação da pergunta no Firestore
+      await addDoc(collection(db, 'perguntas'), {
+        pergunta: newQuestionText,
+        materia: selectedMateria,
+        nome: 'Nome do Usuário', // Substitua pelo nome do usuário
+        fotoPerfil: '', // Coloque a URL da foto do perfil do usuário
+      });
+      setNewQuestionText('');
+      setSelectedMateria('');
+      setModalVisible(false); // Fecha o modal após envio
+    } else {
+      alert('Preencha todos os campos');
     }
   };
 
@@ -102,10 +119,10 @@ const PerguntasMaterias = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.questionsContainer} style={styles.questionsScroll}>
         {filteredQuestions.map((item) => (
           <TouchableOpacity 
-          key={item.id} 
-          style={styles.questionBox}
-          onPress={() => navigation.navigate('PerguntaPage', { questionId: item.id })} // Passando o ID da pergunta
-        >        
+            key={item.id} 
+            style={styles.questionBox}
+            onPress={() => navigation.navigate('PerguntaPage', { questionId: item.id })}
+          >        
             <View style={styles.questionHeader}>
               <Image source={{ uri: item.fotoPerfil }} style={styles.profileImage} />
               <Text style={styles.name}>{item.nome}</Text>
@@ -116,6 +133,60 @@ const PerguntasMaterias = ({ navigation }) => {
       </ScrollView>
 
       <Footer navigation={navigation} />
+
+      {/* Botão flutuante para abrir o modal */}
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Text style={styles.floatingButtonText}>+</Text>
+      </TouchableOpacity>
+
+      {/* Modal para criar pergunta */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>DIGITE SUA PERGUNTA</Text>
+
+            {/* Campo para descrição da pergunta */}
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Digite sua pergunta"
+              value={newQuestionText}
+              onChangeText={setNewQuestionText}
+            />
+
+            {/* Seletor de matéria */}
+            <Text style={styles.modalSubtitle}>Selecione a matéria:</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {materias.map((materia) => (
+                <TouchableOpacity
+                  key={materia.name}
+                  style={[styles.subjectButton, selectedMateria === materia.name && styles.selectedSubjectButton]}
+                  onPress={() => setSelectedMateria(materia.name)}
+                >
+                  <Text style={styles.subjectText}>{materia.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            {/* Botões de Enviar e Fechar */}
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.createButton} onPress={handleCreateQuestion}>
+                <Text style={styles.createButtonText}>Enviar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                <Text style={styles.closeButtonText}>Fechar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -197,6 +268,97 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#007BFF',
     marginTop: 5,
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: '#007BFF',
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+  },
+  floatingButtonText: {
+    fontSize: 30,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '85%',
+    height: 'auto',
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalInput: {
+    width: '100%',
+    height: 100,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subjectButton: {
+    padding: 10,
+    margin: 5,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  selectedSubjectButton: {
+    backgroundColor: '#FFEC5C',
+  },
+  subjectText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  createButton: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: 'center',
+  },
+  createButtonText: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  closeButton: {
+    backgroundColor: '#ccc',
+    padding: 10,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
 

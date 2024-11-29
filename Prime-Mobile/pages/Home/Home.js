@@ -1,209 +1,105 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  StatusBar,
-  TextInput,
-  Modal,
-  Button,
-  Alert,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Modal, FlatList } from 'react-native';
 import Footer from '../../components/Footer/Footer';
-import { launchImageLibrary } from 'react-native-image-picker';
 
-const Perfil = ({ navigation }) => {
+const materias = [
+  { nome: 'Português', icone: require('../.././assets/materias/portugues.png') },
+  { nome: 'Matemática', icone: require('../.././assets/materias/matematica.png') },
+  { nome: 'Química', icone: require('../.././assets/materias/quimica.png') },
+  { nome: 'Biologia', icone: require('../.././assets/materias/biologia.png') },
+  { nome: 'Geografia', icone: require('../.././assets/materias/geografia.png') },
+  { nome: 'Sociologia', icone: require('../.././assets/materias/sociologia.png') },
+  { nome: 'Física', icone: require('../.././assets/materias/fisica.png') },
+  { nome: 'História', icone: require('../.././assets/materias/historia.png') },
+];
+
+const Home = ({ navigation }) => {
+  const [materiaSelecionada, setMateriaSelecionada] = useState(materias[1]); // Default: Matemática
   const [modalVisible, setModalVisible] = useState(false);
-  const [profileData, setProfileData] = useState({
-    nome: 'RICHARD ORELHA DA SILVINHA',
-    escolaridade: 'Ensino Médio',
-    dataNascimento: '02/02/2004',
-    lingua: 'Português',
-  });
-  const [profileImage, setProfileImage] = useState('https://via.placeholder.com/80'); // URL da imagem do perfil
 
-  const handleEditProfile = () => {
-    setModalVisible(true);
-  };
-
-  const handleSaveProfile = () => {
+  const selecionarMateria = (materia) => {
+    setMateriaSelecionada(materia);
     setModalVisible(false);
-    Alert.alert('Perfil atualizado!', 'Suas alterações foram salvas com sucesso.');
-  };
-
-  // Função para selecionar uma imagem da galeria e fazer o upload
-  const handleProfileImageChange = () => {
-    launchImageLibrary(
-      {
-        mediaType: 'photo',
-        quality: 0.5,
-        includeBase64: false, // Para não incluir base64 na imagem
-      },
-      async (response) => {
-        if (response.didCancel) {
-          console.log('Usuário cancelou a seleção da imagem');
-        } else if (response.errorMessage) {
-          console.error('Erro ao selecionar imagem:', response.errorMessage);
-        } else {
-          const selectedImage = response.assets[0];
-          const imageUri = selectedImage.uri;
-          setProfileImage(imageUri);
-
-          // Enviar a imagem para o servidor
-          try {
-            const formData = new FormData();
-            formData.append('profileImage', {
-              uri: imageUri,
-              type: selectedImage.type,
-              name: 'profile.jpg', // Nome da imagem
-            });
-
-            const response = await fetch('https://your-server.com/upload', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-              body: formData,
-            });
-
-            const result = await response.json();
-            if (result.success) {
-              Alert.alert('Imagem Atualizada', 'Sua imagem de perfil foi atualizada com sucesso.');
-            } else {
-              Alert.alert('Erro ao atualizar imagem', 'Tente novamente mais tarde.');
-            }
-          } catch (error) {
-            console.error('Erro ao enviar imagem:', error);
-            Alert.alert('Erro', 'Ocorreu um erro ao enviar a imagem.');
-          }
-        }
-      }
-    );
   };
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.headerp}>
-        <View style={styles.profileSection}>
-          <TouchableOpacity onPress={handleProfileImageChange}>
-            <Image
-              source={{ uri: profileImage }}
-              style={styles.profileImage}
-            />
-          </TouchableOpacity>
-          <View>
-            <Text style={styles.userName}>{profileData.nome}</Text>
-            <Text style={styles.userBirthDate}>{profileData.dataNascimento}</Text>
-          </View>
+      {/* Parte superior com o texto, ícone, título da matéria e o campo de busca */}
+      <View style={styles.header}>
+        <Text style={styles.title}>FAÇA SUA PERGUNTA ABAIXO</Text>
+        <TouchableOpacity 
+          style={styles.subjectContainer} 
+          onPress={() => setModalVisible(true)}
+        >
+          <Image source={materiaSelecionada.icone} style={styles.subjectIcon} />
+          <Text style={styles.subjectText}>{materiaSelecionada.nome}</Text>
+        </TouchableOpacity>
+        <View style={styles.searchContainer}>
+          <TextInput 
+            style={styles.searchInput} 
+            placeholder="Qual a sua pergunta?" 
+            placeholderTextColor="#888" 
+          />
+          <Text style={styles.searchIcon}>🔍</Text>
         </View>
+        <Image source={require('../.././assets/Icons/student.png')} style={styles.studentIcon} />
       </View>
 
-      {/* Menu de opções */}
-      <View style={styles.menu}>
-        {/* Editar Perfil */}
-        <TouchableOpacity style={styles.menuItem} onPress={handleEditProfile}>
-          <Icon name="pencil-outline" size={24} color="#FFF" />
-          <Text style={styles.menuText}>EDITAR PERFIL</Text>
-        </TouchableOpacity>
-
-        {/* Minhas Perguntas */}
-        <TouchableOpacity style={styles.menuItem}>
-          <Icon name="book-open-outline" size={24} color="#FFF" />
-          <Text style={styles.menuText}>MINHAS PERGUNTAS</Text>
-        </TouchableOpacity>
-
-        {/* Minhas Respostas */}
-        <TouchableOpacity style={styles.menuItem}>
-          <Icon name="message-text-outline" size={24} color="#FFF" />
-          <Text style={styles.menuText}>MINHAS RESPOSTAS</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Botão "Sair da conta" */}
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Button
-          title="Sair da conta"
-          onPress={() => Alert.alert('Botão Sair pressionado!')}
-          color="red"
-        />
-      </View>
-
-      <Footer navigation={navigation} />
-
-      {/* Modal de Edição de Perfil */}
+      {/* Modal para selecionar matéria */}
       <Modal
-        animationType="slide"
-        transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        transparent={true}
+        animationType="slide"
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Editar Perfil</Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Nome"
-              value={profileData.nome}
-              onChangeText={(text) =>
-                setProfileData({ ...profileData, nome: text })
-              }
+            <Text style={styles.modalTitle}>Selecione uma matéria</Text>
+            <FlatList
+              data={materias}
+              keyExtractor={(item) => item.nome}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItem}
+                  onPress={() => selecionarMateria(item)}
+                >
+                  <Image source={item.icone} style={styles.modalIcon} />
+                  <Text style={styles.modalText}>{item.nome}</Text>
+                </TouchableOpacity>
+              )}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Escolaridade"
-              value={profileData.escolaridade}
-              onChangeText={(text) =>
-                setProfileData({ ...profileData, escolaridade: text })
-              }
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Data de Nascimento (DD/MM/AAAA)"
-              value={profileData.dataNascimento}
-              keyboardType="numeric" // Permite apenas números no teclado
-              maxLength={10} // Limita o campo a 10 caracteres (formato DD/MM/YYYY)
-              onChangeText={(text) => {
-                // Remove todos os caracteres que não são números
-                let formattedText = text.replace(/\D/g, '');
-                if (formattedText.length > 2) {
-                  formattedText = `${formattedText.slice(0, 2)}/${formattedText.slice(2)}`;
-                }
-                if (formattedText.length > 5) {
-                  formattedText = `${formattedText.slice(0, 5)}/${formattedText.slice(5, 10)}`;
-                }
-                setProfileData({ ...profileData, dataNascimento: formattedText });
-              }}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Língua Preferida"
-              value={profileData.lingua}
-              onChangeText={(text) =>
-                setProfileData({ ...profileData, lingua: text })
-              }
-            />
-
-            <View style={styles.buttonRow}>
-              <Button
-                title="Cancelar"
-                onPress={() => setModalVisible(false)}
-                color="#999"
-              />
-              <Button
-                title="Salvar"
-                onPress={handleSaveProfile}
-                color="#1F4B63"
-              />
-            </View>
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalCloseText}>Fechar</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
+      {/* Botões na parte central */}
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PerguntasMaterias')}>
+          <Image source={require('../.././assets/Icons/livrinho.png')} style={styles.buttonIcon} />
+          <Text style={styles.buttonText}>Quem Somos?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CentralAjuda')}>
+            <Image source={require('../.././assets/Icons/bx--headphone.png')} style={styles.buttonIcon} />
+          <Text style={styles.buttonText}>Central de Ajuda</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PerguntasMaterias')}>
+            <Image source={require('../.././assets/Icons/ri--question-fill.png')} style={styles.buttonIcon} />
+          <Text style={styles.buttonText}>Perguntas</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Imagem promocional */}
+      <View style={styles.promoContainer}>
+        <Image source={require ('../.././assets/Images/Banner.png')} style={styles.promoImage}/>
+      </View>
+
+      {/* Footer */}
+      <Footer navigation={navigation} />
     </View>
   );
 };
@@ -211,84 +107,158 @@ const Perfil = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1F4B63',
-    paddingTop: StatusBar.currentHeight || 20,
-  },
-  headerp: {
-    flexDirection: 'row',
+    backgroundColor: '#003b5a',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#1F4B63',
   },
-  profileSection: {
+  header: {
+    backgroundColor: '#7faac2',
+    borderBottomRightRadius: 100,
+    padding: 20,
+    paddingTop: 50,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    zIndex: 1,
+    fontFamily: 'Jomhuria',
+  },
+  subjectContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'black',
+    zIndex: 1,
   },
-  profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  subjectIcon: {
+    width: 40,
+    height: 40,
     marginRight: 10,
   },
-  userName: {
-    color: '#FFF',
+  subjectText: {
+    color: '#333',
+    fontSize: 18,
     fontWeight: 'bold',
-    fontSize: 16,
   },
-  userBirthDate: {
-    color: '#FFF',
-    fontSize: 14,
-    marginTop: 4,
-  },
-  menu: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#1F4B63',
-  },
-  menuItem: {
+  searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#2F6D87',
+    backgroundColor: '#fff',
+    borderRadius: 25,
+    paddingHorizontal: 15,
+    height: 50,
+    width: '90%',
+    marginTop: 10,
+    zIndex: 1,
   },
-  menuText: {
-    color: '#FFF',
-    marginLeft: 15,
+  searchInput: {
+    flex: 1,
     fontSize: 16,
+    color: '#333',
+    zIndex: 1,
+  },
+  searchIcon: {
+    fontSize: 18,
+    color: '#888',
+  },
+  studentIcon: {
+    width: 130,
+    height: 130,
+    position: 'absolute',
+    zIndex: 0,
+    top: 105,
+    right: -10,
+    borderBottomRightRadius: 115,
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 20,
+  },
+  button: {
+    backgroundColor: '#6fb23e',
+    borderRadius: 10,
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+    width: '30%',
+    paddingTop: 50,
+  },
+  buttonIcon: {
+    width: 40,
+    height: 40,
+    marginTop: 4,
+    zIndex: 1,
+    position: 'absolute',
+  },
+  buttonText: {
+    color: '#fff',
     fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  promoContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+    marginBottom: 70,
+  },
+  promoImage: {
+    width: '98%',
+    height: 140,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
+    maxHeight: '100%',
+    height: '100%',
+    margin: 0,
   },
   modalContent: {
+    backgroundColor: '#fff',
     width: '80%',
-    backgroundColor: '#FFF',
-    padding: 20,
     borderRadius: 10,
+    padding: 20,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    marginBottom: 10,
   },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#CCC',
-    marginBottom: 15,
-    fontSize: 16,
-    padding: 5,
-  },
-  buttonRow: {
+  modalItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  modalIcon: {
+    width: 30,
+    height: 30,
+    marginRight: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  modalCloseButton: {
+    backgroundColor: '#7faac2',
+    padding: 10,
+    borderRadius: 5,
     marginTop: 20,
+    alignItems: 'center',
+  },
+  modalCloseText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 
-export default Perfil;
+export default Home;
