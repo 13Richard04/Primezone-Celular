@@ -1,59 +1,92 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TextInput, Modal, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Footer from '../../components/Footer/Footer';
-import { doc, collection, getDoc, query, onSnapshot, where } from 'firebase/firestore';
-import { db } from '../../DB/firebaseConfig';
+import { doc, collection, getDoc, query, onSnapshot, where, addDoc, Timestamp } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth'; 
+import { auth, db } from '../../DB/firebaseConfig';
 
 const PerguntaPage = ({ route, navigation }) => {
-  const { questionId } = route.params; // ID da pergunta passada via navegação
-  const [question, setQuestion] = useState(null); // Estado para os dados da pergunta
-  const [answers, setAnswers] = useState([]); // Estado para as respostas
-  const [loading, setLoading] = useState(true); // Estado de carregamento das respostas
-  const [modalVisible, setModalVisible] = useState(false); // Estado do modal
-  const [newAnswer, setNewAnswer] = useState(''); // Estado para nova resposta
+  const { questionId } = route.params;
+  const [question, setQuestion] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newAnswer, setNewAnswer] = useState('');
+  const [userName, setUserName] = useState(''); // Nome do usuário logado
 
+  // Obtém informações do usuário logado
   useEffect(() => {
-    // Função para buscar os dados da pergunta
-    const fetchQuestion = async () => {
-      try {
-        const questionDoc = await getDoc(doc(db, 'perguntas', questionId));
-        if (questionDoc.exists()) {
-          setQuestion({ id: questionDoc.id, ...questionDoc.data() });
+    const fetchUserInfo = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          setUserName(userDoc.data().name || 'Usuário Anônimo');
         }
-      } catch (error) {
-        console.error('Erro ao buscar a pergunta:', error);
       }
     };
+    fetchUserInfo();
+  }, []);
 
-    // Função para buscar as respostas relacionadas à pergunta
-    const fetchAnswers = () => {
-      const answersQuery = query(
-        collection(db, 'respostas'),
-        where('perguntaId', '==', questionId)
-      );
+  // Função para buscar os dados da pergunta
+  const fetchQuestion = async () => {
+    try {
+      const questionDoc = await getDoc(doc(db, 'perguntas', questionId));
+      if (questionDoc.exists()) {
+        setQuestion({ id: questionDoc.id, ...questionDoc.data() });
+      }
+    } catch (error) {
+      console.error('Erro ao buscar a pergunta:', error);
+    }
+  };
 
-      const unsubscribe = onSnapshot(answersQuery, (snapshot) => {
-        const answersList = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setAnswers(answersList);
-        setLoading(false);
-      });
+  // Função para buscar as respostas relacionadas à pergunta
+  const fetchAnswers = () => {
+    const answersQuery = query(
+      collection(db, 'respostas'),
+      where('perguntaId', '==', questionId)
+    );
 
-      return unsubscribe;
-    };
+    const unsubscribe = onSnapshot(answersQuery, (snapshot) => {
+      const answersList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAnswers(answersList);
+      setLoading(false);
+    });
 
+    return unsubscribe;
+  };
+
+  useEffect(() => {
     fetchQuestion();
     const unsubscribeAnswers = fetchAnswers();
-
-    return () => unsubscribeAnswers(); // Limpa o listener ao desmontar o componente
+    return () => unsubscribeAnswers();
   }, [questionId]);
 
-  const handleSendAnswer = () => {
-    console.log('Nova resposta:', newAnswer);
-    setModalVisible(false);
-    setNewAnswer(''); // Limpa o campo de texto após enviar
+  const handleSendAnswer = async () => {
+    if (newAnswer.trim() === '') {
+      alert('A resposta não pode estar vazia.');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, 'respostas'), {
+        nome: userName, // Nome do usuário logado
+        fotoPerfil: auth.currentUser.photoURL || 'https://placekitten.com/40/40',
+        perguntaId: questionId,
+        texto: newAnswer,
+        timestamp: Timestamp.fromDate(new Date()),
+        uid: auth.currentUser.uid,
+      });
+
+      setModalVisible(false);
+      setNewAnswer('');
+    } catch (error) {
+      console.error('Erro ao enviar a resposta:', error);
+      alert('Erro ao enviar a resposta. Tente novamente.');
+    }
   };
 
   return (
@@ -63,7 +96,6 @@ const PerguntaPage = ({ route, navigation }) => {
         {question && (
           <>
             <View style={styles.questionHeader}>
-              {/* Foto e Nome */}
               <View style={styles.userInfo}>
                 <Image 
                   source={{ uri: question.fotoPerfil || '../.././assets/Images/profileFooter.png' }}
@@ -71,7 +103,6 @@ const PerguntaPage = ({ route, navigation }) => {
                 />
                 <Text style={styles.userName}>{question.nome || 'Usuário Anônimo'}</Text>
               </View>
-              {/* Símbolo da Matéria */}
               <Image 
                 source={{ uri: question.materiaIcon || 'https://placekitten.com/20/20' }}
                 style={styles.subjectIcon}
@@ -84,7 +115,7 @@ const PerguntaPage = ({ route, navigation }) => {
               <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.replyButton}>
                 <Text style={styles.replyButtonText}>+ RESPONDER</Text>
               </TouchableOpacity>
-              {/* <Text style={styles.timestamp}>{question.timestamp || 'Horário da Pergunta'}</Text> */}
+              <Text style={styles.timestamp}>{question.timestamp || 'Horário da Pergunta'}</Text>
             </View>
           </>
         )}
@@ -142,7 +173,6 @@ const PerguntaPage = ({ route, navigation }) => {
         </View>
       </Modal>
 
-      {/* Footer */}
       <Footer navigation={navigation} />
     </View>
   );
