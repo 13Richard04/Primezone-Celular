@@ -4,12 +4,12 @@
     "slug": "Prime-Mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Prime.png",
+    "icon": "./assets/Images/logodouradasemfundo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/Prime.png",
+      "image": "./assets/Images/logodouradasemfundo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0f140c"
+      "backgroundColor": "#0000"
     },
     "assetBundlePatterns": [
       "**/*"

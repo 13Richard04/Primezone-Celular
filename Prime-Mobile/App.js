@@ -31,7 +31,7 @@ const Rotas = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={user ? "PerguntasMaterias" : "Login"} // Direciona para Home ou Login dependendo da autenticação
+        initialRouteName={user ? "Home" : "Login"} // Direciona para Home ou Login dependendo da autenticação
         screenOptions={{
           headerShown: false, // Oculta o cabeçalho por padrão
         }}
