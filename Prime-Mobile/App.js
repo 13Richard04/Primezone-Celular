@@ -11,7 +11,7 @@ import RegisterPage from './pages/Cadastro/Cadastro'; // Substitua pelo caminho 
 import Perfil from './pages/Perfil/Perfil';
 import CentralAjuda from './pages/CentralAjuda/CentralAjuda';
 import PerguntaPage from './pages/Pergunta/Pergunta';
-import Quemsomos from './pages/Quem-somos/quemsomos';
+import Quemsomos from './pages/Quemseremos/quemsomos';
 
 const Stack = createStackNavigator();
 
