@@ -56,15 +56,22 @@ const PerguntasMaterias = ({ navigation }) => {
 
   const handleCreateQuestion = async () => {
     if (newQuestionText.trim() && selectedMateria) {
-      await addDoc(collection(db, 'perguntas'), {
-        pergunta: newQuestionText,
-        materia: selectedMateria,
-        nome: 'Nome do Usuário', // Substitua pelo nome do usuário
-        fotoPerfil: 'https://lncimg.lance.com.br/cdn-cgi/image/width=850,quality=75,format=webp/uploads/2024/11/cr7-alnassr.jpeg', // URL da foto padrão
-      });
-      setNewQuestionText('');
-      setSelectedMateria('');
-      setModalVisible(false);
+      try {
+        await addDoc(collection(db, 'perguntas'), {
+          pergunta: newQuestionText,
+          materia: selectedMateria,
+          nome: 'Nome do Usuário', // Substitua pelo nome do usuário real
+          fotoPerfil: 'https://lncimg.lance.com.br/cdn-cgi/image/width=850,quality=75,format=webp/uploads/2024/11/cr7-alnassr.jpeg', // Foto padrão
+          tempo: new Date().toLocaleString(), // Adiciona a data e hora da criação
+        });
+        setNewQuestionText('');
+        setSelectedMateria('');
+        setModalVisible(false);
+        alert('Pergunta enviada com sucesso!');
+      } catch (error) {
+        console.error('Erro ao salvar a pergunta:', error);
+        alert('Erro ao salvar a pergunta. Tente novamente.');
+      }
     } else {
       alert('Preencha todos os campos');
     }
