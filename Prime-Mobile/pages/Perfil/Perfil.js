@@ -1,96 +1,155 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, StatusBar, Alert, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  StatusBar,
+  TextInput,
+  Modal,
+  Button,
+  Alert,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Footer from '../../components/Footer/Footer';
-import { Button } from 'react-native';
-import { getAuth } from 'firebase/auth'; 
-import { db } from '../../DB/firebaseConfig';
-import { doc, getDoc } from 'firebase/firestore';
 
 const Perfil = ({ navigation }) => {
-  const [userName, setUserName] = useState('');
-  const [profileImage, setProfileImage] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [profileData, setProfileData] = useState({
+    nome: 'RICHARD ORELHA DA SILVINHA',
+    escolaridade: 'Ensino Médio',
+    dataNascimento: '02/02/2004',
+    lingua: 'Português',
+  });
 
-  // Busca as informações do usuário logado
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const auth = getAuth();
-      const user = auth.currentUser;
+  const handleEditProfile = () => {
+    setModalVisible(true);
+  };
 
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUserName(userData.name || 'Usuário Anônimo');
-            setProfileImage(userData.photoURL || 'https://via.placeholder.com/80');
-          } else {
-            setUserName('Usuário Anônimo');
-            setProfileImage('https://via.placeholder.com/80');
-          }
-        } catch (error) {
-          console.error('Erro ao buscar o perfil do usuário:', error);
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchUserProfile();
-  }, []);
-
-  const handlePress = () => {
-    Alert.alert('Botão pressionado!');
+  const handleSaveProfile = () => {
+    setModalVisible(false);
+    Alert.alert('Perfil atualizado!', 'Suas alterações foram salvas com sucesso.');
   };
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#FFF" />
-      ) : (
-        <>
-          {/* Cabeçalho */}
-          <View style={styles.headerp}>
-            <View style={styles.profileSection}>
-              <Image
-                source={{ uri: profileImage }}
-                style={styles.profileImage}
-              />
-              <View>
-                <Text style={styles.userName}>{userName}</Text>
-                <Text style={styles.date}>02/02/2024</Text>
-              </View>
-            </View>
-            <TouchableOpacity>
-              <Icon name="cog-outline" size={24} color="#FFF" />
-              <Text style={styles.configText}>config</Text>
-            </TouchableOpacity>
+      {/* Cabeçalho */}
+      <View style={styles.headerp}>
+        <View style={styles.profileSection}>
+          <Image
+            source={{ uri: 'https://via.placeholder.com/80' }}
+            style={styles.profileImage}
+          />
+          <View>
+            <Text style={styles.userName}>{profileData.nome}</Text>
+            <Text style={styles.userBirthDate}>{profileData.dataNascimento}</Text>
           </View>
+        </View>
+      </View>
 
-          {/* Menu de opções */}
-          <View style={styles.menu}>
-            <TouchableOpacity style={styles.menuItem}>
-              <Icon name="pencil-outline" size={24} color="#FFF" />
-              <Text style={styles.menuText}>MINHAS PERGUNTAS</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem}>
-              <Icon name="checkbox-multiple-outline" size={24} color="#FFF" />
-              <Text style={styles.menuText}>MINHAS RESPOSTAS</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Menu de opções */}
+      <View style={styles.menu}>
+        {/* Editar Perfil */}
+        <TouchableOpacity style={styles.menuItem} onPress={handleEditProfile}>
+          <Icon name="pencil-outline" size={24} color="#FFF" />
+          <Text style={styles.menuText}>EDITAR PERFIL</Text>
+        </TouchableOpacity>
 
-          {/* Botão "Sair da conta" */}
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Button
-              title="Sair da conta"
-              onPress={handlePress}
-              color="red"
-            />
-          </View>
-        </>
-      )}
+        {/* Minhas Perguntas */}
+        <TouchableOpacity style={styles.menuItem}>
+          <Icon name="book-open-outline" size={24} color="#FFF" />
+          <Text style={styles.menuText}>MINHAS PERGUNTAS</Text>
+        </TouchableOpacity>
+
+        {/* Minhas Respostas */}
+        <TouchableOpacity style={styles.menuItem}>
+          <Icon name="message-text-outline" size={24} color="#FFF" />
+          <Text style={styles.menuText}>MINHAS RESPOSTAS</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Botão "Sair da conta" */}
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Button
+          title="Sair da conta"
+          onPress={() => Alert.alert('Botão Sair pressionado!')}
+          color="red"
+        />
+      </View>
 
       <Footer navigation={navigation} />
+
+      {/* Modal de Edição de Perfil */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Editar Perfil</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Nome"
+              value={profileData.nome}
+              onChangeText={(text) =>
+                setProfileData({ ...profileData, nome: text })
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Escolaridade"
+              value={profileData.escolaridade}
+              onChangeText={(text) =>
+                setProfileData({ ...profileData, escolaridade: text })
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Data de Nascimento (DD/MM/AAAA)"
+              value={profileData.dataNascimento}
+              keyboardType="numeric" // Permite apenas números no teclado
+              maxLength={10} // Limita o campo a 10 caracteres (formato DD/MM/YYYY)
+              onChangeText={(text) => {
+                // Remove todos os caracteres que não são números
+                let formattedText = text.replace(/\D/g, '');
+                if (formattedText.length > 2) {
+                  formattedText = `${formattedText.slice(0, 2)}/${formattedText.slice(2)}`;
+                }
+                if (formattedText.length > 5) {
+                  formattedText = `${formattedText.slice(0, 5)}/${formattedText.slice(5, 10)}`;
+                }
+                setProfileData({ ...profileData, dataNascimento: formattedText });
+              }}
+            />
+
+            <TextInput
+              style={styles.input}
+              placeholder="Língua Preferida"
+              value={profileData.lingua}
+              onChangeText={(text) =>
+                setProfileData({ ...profileData, lingua: text })
+              }
+            />
+
+            <View style={styles.buttonRow}>
+              <Button
+                title="Cancelar"
+                onPress={() => setModalVisible(false)}
+                color="#999"
+              />
+              <Button
+                title="Salvar"
+                onPress={handleSaveProfile}
+                color="#1F4B63"
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -123,14 +182,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  date: {
+  userBirthDate: {
     color: '#FFF',
-    fontSize: 12,
-  },
-  configText: {
-    color: '#FFF',
-    fontSize: 10,
-    textAlign: 'center',
+    fontSize: 14,
+    marginTop: 4,
   },
   menu: {
     flex: 1,
@@ -149,6 +204,36 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#FFF',
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#CCC',
+    marginBottom: 15,
+    fontSize: 16,
+    padding: 5,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
 });
 
